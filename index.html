@@ -119,13 +119,12 @@
         const { useState, useEffect, useRef } = React;
         const { motion, AnimatePresence } = window.Motion;
 
-        // --- PERSONAL DATA ---
-        const PORTFOLIO_DATA = {
+        // --- INITIAL DATA (Backup) ---
+        const INITIAL_PORTFOLIO_DATA = {
             name: "SARNAB",
             role: "VIBE-CODER",
             bio: "Specializing in Website Building, Automation, and immersive UX/UI. Turning coffee into code.",
             email: "bhattacharjeeansh6@gmail.com", 
-            
             image: "img1.png", 
             
             stats: [
@@ -141,7 +140,7 @@
             ]
         };
 
-        const PROJECTS = [
+        const INITIAL_PROJECTS = [
             { 
                 id: 1, 
                 title: "Flakedment V1", 
@@ -163,7 +162,7 @@
             { 
                 id: 3, 
                 title: "AURAA Personal AI Assistent", 
-                category: "Web Building + Web Dev + API Integration", 
+                category: "Web Building", 
                 tech: ["Web Design", "Management", "Content"],
                 image: "auraaai.png", 
                 desc: "A platform that help users with their daily written tasks(!Currently under development...!).",
@@ -172,7 +171,7 @@
             { 
                 id: 4, 
                 title: "Weather PRO", 
-                category: "WeatherAPI Inregration + Web Dev + Web UI", 
+                category: "WeatherAPI", 
                 tech: ["REST API", "JSON", "Data Handling"],
                 image: "weatherapi.png", 
                 desc: "Integrating complex third-party APIs into seamless frontend interfaces to let user know weather of any place in the globe.",
@@ -212,7 +211,7 @@
             );
         };
 
-        const Loader = ({ onComplete }) => {
+        const Loader = ({ onComplete, name }) => {
             useEffect(() => {
                 const timer = setTimeout(onComplete, 2200);
                 return () => clearTimeout(timer);
@@ -232,7 +231,7 @@
                         transition={{ duration: 0.8, ease: "backOut" }}
                         className="text-6xl md:text-8xl font-display font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-secondary tracking-tighter"
                     >
-                        {PORTFOLIO_DATA.name}
+                        {name}
                     </motion.div>
                     <motion.div className="mt-6 h-1 w-48 bg-gray-900 rounded-full overflow-hidden">
                         <motion.div 
@@ -248,13 +247,13 @@
                         transition={{ delay: 0.5 }}
                         className="mt-4 text-gray-500 font-mono text-xs tracking-widest"
                     >
-                        INITIALIZING VIBES...
+                        INITIALIZING SYSTEM...
                     </motion.p>
                 </motion.div>
             );
         };
 
-        const Navbar = ({ onOpenContact }) => {
+        const Navbar = ({ onOpenContact, name }) => {
             const [scrolled, setScrolled] = useState(false);
 
             useEffect(() => {
@@ -272,8 +271,8 @@
                 >
                     <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
                         <div className="flex items-center gap-2 group cursor-pointer">
-                            <div className="w-8 h-8 bg-gradient-to-tr from-primary to-accent rounded-lg flex items-center justify-center text-black font-bold font-display text-xl group-hover:rotate-12 transition-transform">S</div>
-                            <span className="font-display font-bold text-xl tracking-tight group-hover:text-accent transition-colors">SARNAB</span>
+                            <div className="w-8 h-8 bg-gradient-to-tr from-primary to-accent rounded-lg flex items-center justify-center text-black font-bold font-display text-xl group-hover:rotate-12 transition-transform">{name.charAt(0)}</div>
+                            <span className="font-display font-bold text-xl tracking-tight group-hover:text-accent transition-colors">{name}</span>
                         </div>
                         <div className="flex items-center gap-8">
                             <div className="hidden md:flex gap-8 text-sm font-medium text-gray-400">
@@ -306,7 +305,7 @@
             ];
 
             return (
-                <section className="py-20 border-b border-white/5 relative overflow-hidden">
+                <section id="about" className="py-20 border-b border-white/5 relative overflow-hidden">
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[200px] bg-primary/20 blur-[100px] rounded-full pointer-events-none"></div>
                     <div className="max-w-7xl mx-auto px-6 relative z-10">
                         <motion.div 
@@ -425,10 +424,10 @@
             );
         };
 
-        const ContactModal = ({ isOpen, onClose }) => {
+        const ContactModal = ({ isOpen, onClose, email, socials }) => {
             const [copied, setCopied] = useState(false);
             const handleCopy = () => {
-                navigator.clipboard.writeText(PORTFOLIO_DATA.email);
+                navigator.clipboard.writeText(email);
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
             };
@@ -449,12 +448,12 @@
                                     <div className="bg-white/5 p-4 rounded-xl border border-white/5 hover:border-accent/50 transition group relative overflow-hidden">
                                         <p className="text-xs text-gray-500 font-mono mb-1 uppercase tracking-widest">Direct Channel</p>
                                         <div className="flex justify-between items-center">
-                                            <span className="font-bold text-lg text-white">{PORTFOLIO_DATA.email}</span>
+                                            <span className="font-bold text-lg text-white truncate mr-4">{email}</span>
                                             <button onClick={handleCopy} className="bg-primary/20 text-primary px-3 py-1 rounded text-sm font-bold hover:bg-primary hover:text-white transition">{copied ? "COPIED!" : "COPY"}</button>
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-3 gap-4">
-                                        {PORTFOLIO_DATA.socials.map((social) => (
+                                        {socials.map((social) => (
                                             <a key={social.label} href={social.link} target="_blank" className="bg-white/5 p-4 rounded-xl border border-white/5 hover:bg-white hover:text-black hover:scale-105 transition flex flex-col items-center justify-center gap-2 group">
                                                 <i className={`ph ph-${social.icon} text-2xl group-hover:text-primary transition-colors`}></i>
                                                 <span className="text-xs font-bold">{social.label}</span>
@@ -472,39 +471,266 @@
             );
         };
 
+        // --- ADMIN COMPONENTS ---
+        
+        const AdminLogin = ({ onLogin, onClose }) => {
+            const [pass, setPass] = useState("");
+            const [err, setErr] = useState(false);
+            
+            const handleLogin = () => {
+                if (pass === "admin") {
+                    onLogin();
+                } else {
+                    setErr(true);
+                }
+            };
+            
+            return (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+                    <div className="bg-[#111] p-8 rounded-2xl border border-white/10 w-full max-w-sm">
+                        <h2 className="text-2xl font-bold mb-4">Admin Access</h2>
+                        <input 
+                            type="password" 
+                            placeholder="Enter Password (admin)" 
+                            className="w-full bg-white/5 border border-white/10 p-3 rounded mb-4 text-white focus:outline-none focus:border-accent"
+                            value={pass}
+                            onChange={(e) => setPass(e.target.value)}
+                        />
+                        {err && <p className="text-red-500 text-sm mb-4">Access Denied</p>}
+                        <div className="flex justify-between">
+                            <button onClick={onClose} className="text-gray-400 hover:text-white">Cancel</button>
+                            <button onClick={handleLogin} className="bg-primary px-6 py-2 rounded font-bold text-white hover:bg-primary/80">Enter</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const AdminPanel = ({ data, projects, onUpdateData, onUpdateProjects, onLogout }) => {
+            const [tab, setTab] = useState("profile");
+            const [editProject, setEditProject] = useState(null);
+            
+            // Local state for forms
+            const [formData, setFormData] = useState(data);
+            
+            useEffect(() => setFormData(data), [data]);
+
+            const handleDataChange = (e) => {
+                setFormData({ ...formData, [e.target.name]: e.target.value });
+            };
+            
+            const saveProfile = () => {
+                onUpdateData(formData);
+                alert("Profile Updated! (Stored in LocalStorage)");
+            };
+            
+            const handleProjectSave = (p) => {
+                if (p.id) {
+                    onUpdateProjects(projects.map(curr => curr.id === p.id ? p : curr));
+                } else {
+                    onUpdateProjects([...projects, { ...p, id: Date.now() }]);
+                }
+                setEditProject(null);
+            };
+            
+            const deleteProject = (id) => {
+                if(confirm("Delete this project?")) {
+                    onUpdateProjects(projects.filter(p => p.id !== id));
+                }
+            };
+
+            const exportConfig = () => {
+                const config = { data, projects };
+                navigator.clipboard.writeText(JSON.stringify(config));
+                alert("Configuration copied to clipboard! Paste this into the INITIAL_ DATA variables in the code to make changes permanent.");
+            };
+
+            return (
+                <div className="min-h-screen bg-[#050505] text-white p-6 pt-24 pb-20">
+                    <div className="max-w-6xl mx-auto">
+                        <div className="flex justify-between items-center mb-8">
+                            <h1 className="text-3xl font-display font-bold">Admin Dashboard</h1>
+                            <div className="flex gap-4">
+                                <button onClick={exportConfig} className="px-4 py-2 bg-yellow-600 rounded hover:bg-yellow-500 text-sm font-bold">Export JSON</button>
+                                <button onClick={onLogout} className="px-4 py-2 bg-red-600 rounded hover:bg-red-500 text-sm font-bold">Exit Admin</button>
+                            </div>
+                        </div>
+                        
+                        <div className="flex gap-4 mb-8 border-b border-white/10 pb-4">
+                            <button onClick={() => setTab("profile")} className={`text-lg font-bold ${tab === "profile" ? "text-accent" : "text-gray-500"}`}>Profile</button>
+                            <button onClick={() => setTab("projects")} className={`text-lg font-bold ${tab === "projects" ? "text-accent" : "text-gray-500"}`}>Projects</button>
+                        </div>
+                        
+                        {tab === "profile" && (
+                            <div className="grid gap-6 max-w-2xl bg-white/5 p-8 rounded-2xl border border-white/10">
+                                <div className="grid gap-2">
+                                    <label className="text-sm text-gray-400">Name</label>
+                                    <input name="name" value={formData.name} onChange={handleDataChange} className="bg-black/50 border border-white/10 p-2 rounded text-white" />
+                                </div>
+                                <div className="grid gap-2">
+                                    <label className="text-sm text-gray-400">Role</label>
+                                    <input name="role" value={formData.role} onChange={handleDataChange} className="bg-black/50 border border-white/10 p-2 rounded text-white" />
+                                </div>
+                                <div className="grid gap-2">
+                                    <label className="text-sm text-gray-400">Bio</label>
+                                    <textarea name="bio" value={formData.bio} onChange={handleDataChange} className="bg-black/50 border border-white/10 p-2 rounded text-white h-24" />
+                                </div>
+                                <div className="grid gap-2">
+                                    <label className="text-sm text-gray-400">Image URL</label>
+                                    <input name="image" value={formData.image} onChange={handleDataChange} className="bg-black/50 border border-white/10 p-2 rounded text-white" />
+                                </div>
+                                <button onClick={saveProfile} className="bg-primary py-3 rounded font-bold mt-4 hover:bg-primary/80">Save Profile Changes</button>
+                            </div>
+                        )}
+                        
+                        {tab === "projects" && (
+                            <div>
+                                {editProject ? (
+                                    <ProjectForm 
+                                        project={editProject} 
+                                        onSave={handleProjectSave} 
+                                        onCancel={() => setEditProject(null)} 
+                                    />
+                                ) : (
+                                    <div className="grid gap-4">
+                                        <button onClick={() => setEditProject({ title: "", category: "", tech: [], image: "", desc: "", link: "" })} className="bg-accent text-black font-bold py-3 rounded mb-4 hover:bg-white">+ Add New Project</button>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            {projects.map(p => (
+                                                <div key={p.id} className="bg-white/5 p-4 rounded-xl border border-white/10 flex flex-col justify-between">
+                                                    <div>
+                                                        <img src={p.image} className="w-full h-32 object-cover rounded mb-3 bg-black" />
+                                                        <h3 className="font-bold">{p.title}</h3>
+                                                        <p className="text-xs text-gray-400 mb-2">{p.category}</p>
+                                                    </div>
+                                                    <div className="flex gap-2 mt-4">
+                                                        <button onClick={() => setEditProject(p)} className="flex-1 bg-white/10 py-1 rounded hover:bg-white/20 text-sm">Edit</button>
+                                                        <button onClick={() => deleteProject(p.id)} className="flex-1 bg-red-500/20 text-red-500 py-1 rounded hover:bg-red-500/40 text-sm">Delete</button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+        
+        const ProjectForm = ({ project, onSave, onCancel }) => {
+            const [p, setP] = useState(project);
+            const handleChange = (e) => setP({ ...p, [e.target.name]: e.target.value });
+            const handleTech = (e) => setP({ ...p, tech: e.target.value.split(',').map(s => s.trim()) });
+            
+            return (
+                <div className="bg-white/5 p-8 rounded-2xl border border-white/10 max-w-2xl">
+                    <h3 className="text-xl font-bold mb-6">{p.id ? "Edit Project" : "New Project"}</h3>
+                    <div className="grid gap-4">
+                        <input name="title" value={p.title} onChange={handleChange} placeholder="Title" className="bg-black/50 border border-white/10 p-2 rounded text-white" />
+                        <input name="category" value={p.category} onChange={handleChange} placeholder="Category" className="bg-black/50 border border-white/10 p-2 rounded text-white" />
+                        <input name="image" value={p.image} onChange={handleChange} placeholder="Image URL" className="bg-black/50 border border-white/10 p-2 rounded text-white" />
+                        <input name="link" value={p.link} onChange={handleChange} placeholder="Project Link" className="bg-black/50 border border-white/10 p-2 rounded text-white" />
+                        <textarea name="desc" value={p.desc} onChange={handleChange} placeholder="Description" className="bg-black/50 border border-white/10 p-2 rounded text-white h-24" />
+                        <div>
+                            <label className="text-xs text-gray-400 mb-1 block">Technologies (comma separated)</label>
+                            <input value={p.tech.join(', ')} onChange={handleTech} placeholder="React, CSS, Node" className="bg-black/50 border border-white/10 p-2 rounded text-white w-full" />
+                        </div>
+                        <div className="flex gap-4 mt-4">
+                            <button onClick={onCancel} className="flex-1 border border-white/20 py-2 rounded hover:bg-white/10">Cancel</button>
+                            <button onClick={() => onSave(p)} className="flex-1 bg-primary py-2 rounded font-bold hover:bg-primary/80">Save Project</button>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
         const App = () => {
+            // --- STATE MANAGEMENT ---
             const [loading, setLoading] = useState(true);
             const [filter, setFilter] = useState("All");
             const [modalData, setModalData] = useState({ isOpen: false, project: null });
             const [isContactOpen, setIsContactOpen] = useState(false);
+            
+            // ADMIN STATE
+            const [isAdminMode, setIsAdminMode] = useState(false);
+            const [showLogin, setShowLogin] = useState(false);
+            
+            // --- PERSISTENT DATA ---
+            const [data, setData] = useState(() => {
+                const saved = localStorage.getItem('portfolio_data');
+                return saved ? JSON.parse(saved) : INITIAL_PORTFOLIO_DATA;
+            });
+            
+            const [projects, setProjects] = useState(() => {
+                const saved = localStorage.getItem('portfolio_projects');
+                return saved ? JSON.parse(saved) : INITIAL_PROJECTS;
+            });
+            
+            // Save to LocalStorage whenever data changes
+            useEffect(() => {
+                localStorage.setItem('portfolio_data', JSON.stringify(data));
+                localStorage.setItem('portfolio_projects', JSON.stringify(projects));
+            }, [data, projects]);
 
-            const categories = ["All", ...new Set(PROJECTS.map(p => p.category))];
-            const filteredProjects = filter === "All" ? PROJECTS : PROJECTS.filter(p => p.category === filter);
-            const profileImage = PORTFOLIO_DATA.image;
+            // --- SECRET ADMIN TRIGGERS ---
+            useEffect(() => {
+                // 1. URL Trigger: checks if website ends with ?secret=admin
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('secret') === 'admin') {
+                    setShowLogin(true);
+                }
+
+                // 2. Keyboard Shortcut: Ctrl + Shift + X
+                const handleKeyDown = (e) => {
+                    if (e.ctrlKey && e.shiftKey && e.key === 'X') {
+                        e.preventDefault();
+                        setShowLogin(prev => !prev);
+                    }
+                };
+
+                window.addEventListener('keydown', handleKeyDown);
+                return () => window.removeEventListener('keydown', handleKeyDown);
+            }, []);
+
+            const categories = ["All", ...new Set(projects.map(p => p.category))];
+            const filteredProjects = filter === "All" ? projects : projects.filter(p => p.category === filter);
+
+            if (isAdminMode) {
+                return (
+                    <AdminPanel 
+                        data={data} 
+                        projects={projects}
+                        onUpdateData={setData}
+                        onUpdateProjects={setProjects}
+                        onLogout={() => setIsAdminMode(false)}
+                    />
+                );
+            }
 
             return (
                 <div className="min-h-screen text-white font-sans selection:bg-accent selection:text-black relative">
                     <Background />
-                    {loading && <Loader onComplete={() => setLoading(false)} />}
+                    {loading && <Loader onComplete={() => setLoading(false)} name={data.name} />}
                     {!loading && (
                         <>
-                            <Navbar onOpenContact={() => setIsContactOpen(true)} />
+                            <Navbar onOpenContact={() => setIsContactOpen(true)} name={data.name} />
                             <header className="relative pt-32 pb-20 px-6 min-h-screen flex items-center overflow-hidden">
                                 <div className="max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-12 items-center">
                                     <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} className="z-10">
-                                        <div className="flex items-center gap-4 mb-6"><span className="h-[1px] w-12 bg-accent"></span><span className="text-accent font-mono text-sm tracking-widest uppercase">Hello, I'm {PORTFOLIO_DATA.name}</span></div>
-                                        <h1 className="text-6xl sm:text-7xl md:text-8xl font-display font-bold leading-[0.9] mb-8"><span className="vibe-glow">VIBE</span> <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent coder-glow">CODER.</span></h1>
-                                        <p className="text-xl text-gray-400 max-w-lg mb-12 font-light leading-relaxed">{PORTFOLIO_DATA.bio}</p>
+                                        <div className="flex items-center gap-4 mb-6"><span className="h-[1px] w-12 bg-accent"></span><span className="text-accent font-mono text-sm tracking-widest uppercase">Hello, I'm {data.name}</span></div>
+                                        <h1 className="text-6xl sm:text-7xl md:text-8xl font-display font-bold leading-[0.9] mb-8"><span className="vibe-glow">VIBE</span> <br/> <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-accent coder-glow">{data.role}</span></h1>
+                                        <p className="text-xl text-gray-400 max-w-lg mb-12 font-light leading-relaxed">{data.bio}</p>
                                         <div className="flex flex-wrap gap-6 items-center">
                                             <button onClick={() => document.getElementById('work').scrollIntoView({ behavior: 'smooth' })} className="bg-white text-black font-bold px-8 py-4 rounded-full hover:bg-accent transition transform hover:scale-105 shadow-[0_0_20px_rgba(255,255,255,0.3)]">View My Work</button>
                                             <div className="flex gap-4">
-                                                {PORTFOLIO_DATA.socials.map((social, i) => (
+                                                {data.socials.map((social, i) => (
                                                     <a key={i} href={social.link} className="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center hover:bg-white hover:text-black transition"><i className={`ph ph-${social.icon} text-xl`}></i></a>
                                                 ))}
                                             </div>
                                         </div>
                                         <div className="mt-16 flex gap-12 border-t border-white/10 pt-8">
-                                            {PORTFOLIO_DATA.stats.map((stat, i) => (
+                                            {data.stats.map((stat, i) => (
                                                 <div key={i}><h4 className="text-3xl font-display font-bold text-white">{stat.value}</h4><p className="text-sm text-gray-500 uppercase tracking-wider">{stat.label}</p></div>
                                             ))}
                                         </div>
@@ -514,7 +740,7 @@
                                             <div className="absolute inset-0 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm"></div>
                                             <div className="absolute -inset-4 rounded-full border border-dashed border-accent/30 animate-[spin_20s_linear_infinite]"></div>
                                             <div className="absolute inset-4 rounded-full overflow-hidden image-glow border-2 border-white/10 group">
-                                                <img src={profileImage} alt="Profile" className="w-full h-full object-cover transition duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" onError={(e) => {e.target.src='https://placehold.co/600x600/121212/22d3ee?text=Profile+Image'}} />
+                                                <img src={data.image} alt="Profile" className="w-full h-full object-cover transition duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0" onError={(e) => {e.target.src='https://placehold.co/600x600/121212/22d3ee?text=Profile+Image'}} />
                                                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/40 to-transparent mix-blend-overlay"></div>
                                             </div>
                                             <motion.div className="absolute bottom-10 -left-4 bg-black/80 backdrop-blur border border-white/10 p-4 rounded-2xl shadow-xl flex items-center gap-3" initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 1 }}>
@@ -545,9 +771,15 @@
                                     </AnimatePresence>
                                 </motion.div>
                             </main>
-                            <footer className="border-t border-white/5 bg-black py-12 text-center text-gray-600 text-sm"><p>© {new Date().getFullYear()} Sarnab Bhattacharjee. All rights reserved.</p></footer>
+                            
+                            <footer className="border-t border-white/5 bg-black py-12 text-center text-gray-600 text-sm flex flex-col gap-4">
+                                <p>© {new Date().getFullYear()} Sarnab Bhattacharjee. All rights reserved.</p>
+                            </footer>
+
                             <ProjectModal isOpen={modalData.isOpen} project={modalData.project} onClose={() => setModalData({ ...modalData, isOpen: false })} />
-                            <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} />
+                            <ContactModal isOpen={isContactOpen} onClose={() => setIsContactOpen(false)} email={data.email} socials={data.socials} />
+                            
+                            {showLogin && <AdminLogin onLogin={() => { setShowLogin(false); setIsAdminMode(true); }} onClose={() => setShowLogin(false)} />}
                         </>
                     )}
                 </div>
